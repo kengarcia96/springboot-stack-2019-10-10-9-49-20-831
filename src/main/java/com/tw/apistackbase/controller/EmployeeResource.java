@@ -13,32 +13,37 @@ public class EmployeeResource {
 
     private List<Employee> employeeList = new ArrayList<>();
 
-    @PostMapping(path = "/employee", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> addEmployee(@RequestBody Employee employees) {
-        employeeList.add(employees);
-        return ResponseEntity.ok("Added Member:" + employees.getName());
-    }
-
-
-
-    @DeleteMapping(path = "/employee/remove/{id}")
-    public ResponseEntity<Integer> removeEmployee(@PathVariable Integer id) {
-
-//        Employee ids = null;
-        for(Employee ids : employeeList){
-            if(ids.getId() == (id))
-                ids.remove(ids);
-        }
-
-//        employeeList.remove(id);
-//        return ResponseEntity.ok("Removed Member");
-        return ResponseEntity.ok(id);
-    }
-
-
     @GetMapping(produces = {"application/json"})
     public ResponseEntity<List<Employee>> getAllEmployee() {
         return ResponseEntity.ok(employeeList);
     }
+
+    @PostMapping(path = "/employee", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<String> addEmployee(@RequestBody Employee employees) {
+        employeeList.add(employees);
+        return ResponseEntity.ok("Added Employee:" + employees.getName());
+    }
+
+    @DeleteMapping(path = "/employee/remove/{id}", produces = {"application/json"})
+    public ResponseEntity<String> removeEmployee(@PathVariable Integer id) {
+
+        Employee employeeID = employeeList.stream().filter(employee -> id == employee.getId()).findFirst().orElse(null);
+        employeeList.remove(employeeID);
+
+        return ResponseEntity.ok("Deleted Employee Record: " + employeeID.getName());
+    }
+
+    @PutMapping(path = "/employee/update/{id}", produces = {"application/json"})
+    public ResponseEntity<String> updateEmployee(@PathVariable Integer id, @RequestBody Employee employee) {
+
+        Employee employeeID = employeeList.stream().filter(employeeRecord -> id == employeeRecord.getId()).findFirst().orElse(null);
+        employeeList.remove(employeeID);
+        employeeList.add(employee);
+
+        return ResponseEntity.ok("Updated Employee Record: " + employee.getName());
+    }
+
+
+
 
 }
